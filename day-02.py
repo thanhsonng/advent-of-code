@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from urllib import request
 from dotenv import load_dotenv
 
@@ -14,48 +15,50 @@ req = request.Request(input_url, headers=headers)
 
 
 with request.urlopen(req) as res:
-    # TODO: Use enum
+    Shape = Enum('Shape', 'ROCK PAPER SCISSORS')
+    Outcome = Enum('Outcome', 'LOSE DRAW WIN')
+
     def get_shape_from_encryption(encryption):
         if encryption in ['A', 'X']:
-            return 'Rock'
+            return Shape.ROCK
         if encryption in ['B', 'Y']:
-            return 'Paper'
+            return Shape.PAPER
         if encryption in ['C', 'Z']:
-            return 'Scissors'
+            return Shape.SCISSORS
         return None
 
     def get_outcome_from_shapes(elf_shape, my_shape):
-        shapes = ['Rock', 'Paper', 'Scissors']
+        shapes = [Shape.ROCK, Shape.PAPER, Shape.SCISSORS]
         elf_index = shapes.index(elf_shape)
         my_index = shapes.index(my_shape)
         if elf_index == my_index:
-            return 'Draw'
+            return Outcome.DRAW
         if elf_index == (my_index + 1) % 3:
-            return 'Lose'
-        return 'Win'
+            return Outcome.LOSE
+        return Outcome.WIN
 
     def get_outcome_from_encryption(enc_outcome):
         outcomes = {
-            'X': 'Lose',
-            'Y': 'Draw',
-            'Z': 'Win',
+            'X': Outcome.LOSE,
+            'Y': Outcome.DRAW,
+            'Z': Outcome.WIN,
         }
         return outcomes[enc_outcome]
 
     def get_score_from_outcome(outcome):
         scores = {
-            'Lose': 0,
-            'Draw': 3,
-            'Win': 6,
+            Outcome.LOSE: 0,
+            Outcome.DRAW: 3,
+            Outcome.WIN: 6,
         }
         return scores[outcome]
 
     def get_shape_from_outcome(outcome, elf_shape):
-        shapes = ['Rock', 'Paper', 'Scissors']
+        shapes = [Shape.ROCK, Shape.PAPER, Shape.SCISSORS]
         elf_index = shapes.index(elf_shape)
-        if outcome == 'Draw':
+        if outcome == Outcome.DRAW:
             index = elf_index
-        elif outcome == 'Lose':
+        elif outcome == Outcome.LOSE:
             index = (elf_index - 1) % len(shapes)
         else:
             index = (elf_index + 1) % len(shapes)
@@ -63,9 +66,9 @@ with request.urlopen(req) as res:
 
     def get_score_from_shape(shape):
         scores = {
-            'Rock': 1,
-            'Paper': 2,
-            'Scissors': 3,
+            Shape.ROCK: 1,
+            Shape.PAPER: 2,
+            Shape.SCISSORS: 3,
         }
         return scores[shape]
 
