@@ -1,5 +1,9 @@
 import os
 from urllib import request
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 input_url = 'https://adventofcode.com/2022/day/1/input'
 headers = {
