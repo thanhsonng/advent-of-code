@@ -24,7 +24,7 @@ with request.urlopen(req) as res:
             return 'Scissors'
         return None
 
-    def get_outcome(elf_shape, my_shape):
+    def get_outcome_from_shapes(elf_shape, my_shape):
         shapes = ['Rock', 'Paper', 'Scissors']
         elf_index = shapes.index(elf_shape)
         my_index = shapes.index(my_shape)
@@ -34,26 +34,6 @@ with request.urlopen(req) as res:
             return 'Lose'
         return 'Win'
 
-    def get_score_from_enc_shape(enc_shape):
-        scores = {
-            'Rock': 1,
-            'Paper': 2,
-            'Scissors': 3,
-        }
-        shape = get_shape_from_encryption(enc_shape)
-        return scores[shape]
-
-    def get_score_from_outcome(enc_elf_shape, enc_my_shape):
-        scores = {
-            'Lose': 0,
-            'Draw': 3,
-            'Win': 6,
-        }
-        elf_shape = get_shape_from_encryption(enc_elf_shape)
-        my_shape = get_shape_from_encryption(enc_my_shape)
-        outcome = get_outcome(elf_shape, my_shape)
-        return scores[outcome]
-
     def get_outcome_from_encryption(enc_outcome):
         outcomes = {
             'X': 'Lose',
@@ -62,7 +42,7 @@ with request.urlopen(req) as res:
         }
         return outcomes[enc_outcome]
 
-    def score_from_outcome(outcome):
+    def get_score_from_outcome(outcome):
         scores = {
             'Lose': 0,
             'Draw': 3,
@@ -100,16 +80,21 @@ with request.urlopen(req) as res:
     for a_round in rounds:
         if a_round == '':
             continue
+        enc_elf_shape, enc_value = a_round.split(' ')
+        elf_shape = get_shape_from_encryption(enc_elf_shape)
 
         # Part 1
-        enc_elf_shape, enc_value = a_round.split(' ')
-        total_score_1 += get_score_from_enc_shape(enc_value) + get_score_from_outcome(enc_elf_shape, enc_value)
+        my_shape_1 = get_shape_from_encryption(enc_value)
+        outcome_1 = get_outcome_from_shapes(elf_shape, my_shape_1)
+        score_from_shape_1 = get_score_from_shape(my_shape_1)
+        score_from_outcome_1 = get_score_from_outcome(outcome_1)
+        total_score_1 += score_from_shape_1 + score_from_outcome_1
 
         # Part 2
-        elf_shape = get_shape_from_encryption(enc_elf_shape)
-        desired_outcome = get_outcome_from_encryption(enc_value)
-        score_from_shape_2 = get_score_from_shape(get_shape_from_outcome(desired_outcome, elf_shape))
-        score_from_outcome_2 = score_from_outcome(desired_outcome)
+        outcome_2 = get_outcome_from_encryption(enc_value)
+        my_shape_2 = get_shape_from_outcome(outcome_2, elf_shape)
+        score_from_shape_2 = get_score_from_shape(my_shape_2)
+        score_from_outcome_2 = get_score_from_outcome(outcome_2)
         total_score_2 += score_from_shape_2 + score_from_outcome_2
 
     print(f'Total score 1: {total_score_1}')
