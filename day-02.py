@@ -14,10 +14,6 @@ req = request.Request(input_url, headers=headers)
 
 
 with request.urlopen(req) as res:
-    # TODO: Read line-by-line to save memory
-    strategy_guide: str = res.read().decode('utf8')
-    rounds = strategy_guide.split('\n')
-
     # TODO: Use enum
     def get_shape_from_encryption(encryption):
         if encryption in ['A', 'X']:
@@ -58,12 +54,63 @@ with request.urlopen(req) as res:
         outcome = get_outcome(elf_shape, my_shape)
         return scores[outcome]
 
-    total_score = 0
+    def get_outcome_from_encryption(enc_outcome):
+        outcomes = {
+            'X': 'Lose',
+            'Y': 'Draw',
+            'Z': 'Win',
+        }
+        return outcomes[enc_outcome]
+
+    def score_from_outcome(outcome):
+        scores = {
+            'Lose': 0,
+            'Draw': 3,
+            'Win': 6,
+        }
+        return scores[outcome]
+
+    def get_shape_from_outcome(outcome, elf_shape):
+        shapes = ['Rock', 'Paper', 'Scissors']
+        elf_index = shapes.index(elf_shape)
+        if outcome == 'Draw':
+            index = elf_index
+        elif outcome == 'Lose':
+            index = (elf_index - 1) % len(shapes)
+        else:
+            index = (elf_index + 1) % len(shapes)
+        return shapes[index]
+
+    def get_score_from_shape(shape):
+        scores = {
+            'Rock': 1,
+            'Paper': 2,
+            'Scissors': 3,
+        }
+        return scores[shape]
+
+
+    # TODO: Read line-by-line to save memory
+    strategy_guide: str = res.read().decode('utf8')
+    rounds = strategy_guide.split('\n')
+
+    total_score_1 = 0
+    total_score_2 = 0
 
     for a_round in rounds:
         if a_round == '':
             continue
-        elf_shape, my_shape = a_round.split(' ')
-        total_score += get_score_from_enc_shape(my_shape) + get_score_from_outcome(elf_shape, my_shape)
 
-    print(f'Total score: {total_score}')
+        # Part 1
+        enc_elf_shape, enc_value = a_round.split(' ')
+        total_score_1 += get_score_from_enc_shape(enc_value) + get_score_from_outcome(enc_elf_shape, enc_value)
+
+        # Part 2
+        elf_shape = get_shape_from_encryption(enc_elf_shape)
+        desired_outcome = get_outcome_from_encryption(enc_value)
+        score_from_shape_2 = get_score_from_shape(get_shape_from_outcome(desired_outcome, elf_shape))
+        score_from_outcome_2 = score_from_outcome(desired_outcome)
+        total_score_2 += score_from_shape_2 + score_from_outcome_2
+
+    print(f'Total score 1: {total_score_1}')
+    print(f'Total score 2: {total_score_2}')
