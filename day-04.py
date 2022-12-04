@@ -18,9 +18,8 @@ with request.urlopen(req) as res:
     strategy_guide: str = res.read().decode('utf8')
     pairs = strategy_guide.split('\n')
 
-    # Part 1
-
     fully_contain_pairs = 0
+    overlapping_pairs = 0
 
     for pair in pairs:
         if pair == '':
@@ -30,5 +29,8 @@ with request.urlopen(req) as res:
         lower_2, upper_2 = [int(x) for x in range_2.split('-')]
         if (lower_1 <= lower_2 and upper_1 >= upper_2) or (lower_1 >= lower_2 and upper_1 <= upper_2):
             fully_contain_pairs += 1
+        if (lower_1 <= lower_2 and upper_1 >= lower_2) or (lower_2 <= lower_1 and upper_2 >= lower_1):
+            overlapping_pairs += 1
 
     print(f'Fully contain pairs: {fully_contain_pairs}')
+    print(f'Overlapping pairs: {overlapping_pairs}')
