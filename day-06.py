@@ -15,7 +15,8 @@ req = request.Request(input_url, headers=headers)
 
 with request.urlopen(req) as res:
     # TODO: Read line-by-line to save memory
-    signal: str = res.read().decode('utf8').strip()
+    all_input: str = res.read().decode('utf8')
+    signal = all_input.strip()
 
     # Part 1
     last_4_chars = ''

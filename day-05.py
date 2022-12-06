@@ -17,8 +17,8 @@ req = request.Request(input_url, headers=headers)
 
 with request.urlopen(req) as res:
     # TODO: Read line-by-line to save memory
-    strategy_guide: str = res.read().decode('utf8')
-    input_text = strategy_guide.split('\n')
+    all_input: str = res.read().decode('utf8')
+    input_text = all_input.split('\n')
     stacks_input = input_text[0:8]
     moves_input = input_text[10:]
 

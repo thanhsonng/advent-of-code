@@ -15,8 +15,8 @@ req = request.Request(input_url, headers=headers)
 
 with request.urlopen(req) as res:
     # TODO: Read line-by-line to save memory
-    strategy_guide: str = res.read().decode('utf8')
-    pairs = strategy_guide.split('\n')
+    all_input: str = res.read().decode('utf8')
+    pairs = all_input.split('\n')
 
     fully_contain_pairs = 0
     overlapping_pairs = 0

@@ -21,8 +21,8 @@ with request.urlopen(req) as res:
             return ord(char) - 38
 
     # TODO: Read line-by-line to save memory
-    strategy_guide: str = res.read().decode('utf8')
-    rucksacks = strategy_guide.split('\n')
+    all_input: str = res.read().decode('utf8')
+    rucksacks = all_input.split('\n')
 
     # Part 1
     total_priorities = 0
