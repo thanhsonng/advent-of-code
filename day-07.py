@@ -44,9 +44,9 @@ with request.urlopen(req) as res:
         def get_size(self):
             if self.get_type() == NodeType.FILE:
                 return self.size
-            size = sum(child.get_size() for child in self.children)
-            self.size = size # Memoize value
-            return size
+            if self.size == 0:
+                self.size = sum(child.get_size() for child in self.children) # Memoize size
+            return self.size
 
 
     # TODO: Read line-by-line to save memory
