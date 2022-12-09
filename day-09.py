@@ -16,25 +16,33 @@ req = request.Request(input_url, headers=headers)
 with request.urlopen(req) as res:
     # TODO: Read line-by-line to save memory
     all_input: str = res.read().decode('utf8')
-    moves = all_input.split('\n')[0:-1] # ignore the last empty line
+    moves = all_input.strip().split('\n')
 
     # Part 1
-    NUM_KNOTS = 2
+    # NUM_KNOTS = 2
     # Part 2
-    # NUM_KNOTS = 10
+    NUM_KNOTS = 10
     knots_positions = []
     for i in range(NUM_KNOTS):
         knots_positions.append((0, 0)) # x, y
 
     tail_positions = set()
 
-    # Possible relative positions before and after head moves
+    # Part 1: Possible relative positions before and after head moves
     #
     #                                  H   H   H
     #      H   H   H               H   H   H   H   H
     #      H  T/H  H  --------->   H   H  T/H  H   H
     #      H   H   H               H   H   H   H   H
     #                                  H   H   H
+
+    # Part 2: Possible relative positions before and after knot moves
+    #
+    #                              K   K   K   K   K
+    #      K   K   K               K   K   K   K   K
+    #      K  T/K  K  --------->   K   K  T/K  K   K
+    #      K   K   K               K   K   K   K   K
+    #                              K   K   K   K   K
 
     for move in moves:
         direction, steps = move.split(' ')
@@ -56,46 +64,21 @@ with request.urlopen(req) as res:
             for i in range(1, NUM_KNOTS):
                 prev_x, prev_y = knots_positions[i - 1]
                 knot_x, knot_y = knots_positions[i]
-                if knot_x - 1 <= prev_x <= knot_x + 1 and knot_y + 1 <= prev_y <= knot_y + 1:
-                    pass # Don't need to move knot
-                elif prev_y == knot_y:
-                    if prev_x == knot_x + 2:
-                        knot_x += 1 # Move knot to the right
-                    elif prev_x == knot_x - 2:
-                        knot_x -= 1 # Move knot to the left
-                elif prev_x == knot_x:
-                    if prev_y == knot_y + 2:
-                        knot_y += 1 # Move knot up
-                    elif prev_y == knot_y - 2:
-                        knot_y -= 1 # Move knot down
-                elif prev_x == knot_x + 1:
-                    if prev_y == knot_y + 2:
-                        knot_x += 1 # Move knot up-right
-                        knot_y += 1
-                    elif prev_y == knot_y - 2:
-                        knot_x += 1 # Move knot down-right
-                        knot_y -= 1
-                elif prev_x == knot_x + 2:
-                    if prev_y == knot_y + 1:
-                        knot_x += 1 # Move knot up-right
-                        knot_y += 1
-                    elif prev_y == knot_y - 1:
-                        knot_x += 1 # Move knot down-right
-                        knot_y -= 1
-                elif prev_x == knot_x - 1:
-                    if prev_y == knot_y + 2:
-                        knot_x -= 1 # Move knot up-left
-                        knot_y += 1
-                    elif prev_y == knot_y - 2:
-                        knot_x -= 1 # Move knot down-left
-                        knot_y -= 1
-                elif prev_x == knot_x - 2:
-                    if prev_y == knot_y + 1:
-                        knot_x -= 1 # Move knot up-left
-                        knot_y += 1
-                    elif prev_y == knot_y - 1:
-                        knot_x -= 1 # Move knot down-left
-                        knot_y -= 1
+
+                diff_x = prev_x - knot_x
+                diff_y = prev_y - knot_y
+                if abs(diff_x) <= 1 and abs(diff_y) <= 1:
+                    pass
+                else:
+                    coef = {
+                        2: 1,
+                        1: 1,
+                        0: 0,
+                        -1: -1,
+                        -2: -1,
+                    }
+                    knot_x += coef[diff_x] * 1
+                    knot_y += coef[diff_y] * 1
                 knots_positions[i] = (knot_x, knot_y)
 
                 # Remember the positions tail has visited
