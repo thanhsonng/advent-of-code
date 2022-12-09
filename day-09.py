@@ -18,8 +18,14 @@ with request.urlopen(req) as res:
     all_input: str = res.read().decode('utf8')
     moves = all_input.split('\n')[0:-1] # ignore the last empty line
 
-    head_position = (0, 0) # x, y
-    tail_position = (0, 0)
+    # Part 1
+    NUM_KNOTS = 2
+    # Part 2
+    # NUM_KNOTS = 10
+    knots_positions = []
+    for i in range(NUM_KNOTS):
+        knots_positions.append((0, 0)) # x, y
+
     tail_positions = set()
 
     # Possible relative positions before and after head moves
@@ -35,7 +41,7 @@ with request.urlopen(req) as res:
         steps = int(steps)
         for step in range(steps):
             # Move head
-            head_x, head_y = head_position
+            head_x, head_y = knots_positions[0]
             if direction == 'R':
                 head_x += 1
             elif direction == 'L':
@@ -44,53 +50,56 @@ with request.urlopen(req) as res:
                 head_y += 1
             elif direction == 'D':
                 head_y -= 1
-            head_position = (head_x, head_y)
+            knots_positions[0] = (head_x, head_y)
 
-            # Move tail
-            tail_x, tail_y = tail_position
-            if tail_x - 1 <= head_x <= tail_x + 1 and tail_y + 1 <= head_y <= tail_y + 1:
-                pass # Don't need to move tail
-            elif head_y == tail_y:
-                if head_x == tail_x + 2:
-                    tail_x += 1 # Move tail to the right
-                elif head_x == tail_x - 2:
-                    tail_x -= 1 # Move tail to the left
-            elif head_x == tail_x:
-                if head_y == tail_y + 2:
-                    tail_y += 1 # Move tail up
-                elif head_y == tail_y - 2:
-                    tail_y -= 1 # Move tail down
-            elif head_x == tail_x + 1:
-                if head_y == tail_y + 2:
-                    tail_x += 1 # Move tail up-right
-                    tail_y += 1
-                elif head_y == tail_y - 2:
-                    tail_x += 1 # Move tail down-right
-                    tail_y -= 1
-            elif head_x == tail_x + 2:
-                if head_y == tail_y + 1:
-                    tail_x += 1 # Move tail up-right
-                    tail_y += 1
-                elif head_y == tail_y - 1:
-                    tail_x += 1 # Move tail down-right
-                    tail_y -= 1
-            elif head_x == tail_x - 1:
-                if head_y == tail_y + 2:
-                    tail_x -= 1 # Move tail up-left
-                    tail_y += 1
-                elif head_y == tail_y - 2:
-                    tail_x -= 1 # Move tail down-left
-                    tail_y -= 1
-            elif head_x == tail_x - 2:
-                if head_y == tail_y + 1:
-                    tail_x -= 1 # Move tail up-left
-                    tail_y += 1
-                elif head_y == tail_y - 1:
-                    tail_x -= 1 # Move tail down-left
-                    tail_y -= 1
-            tail_position = (tail_x, tail_y)
+            # Move other knots
+            for i in range(1, NUM_KNOTS):
+                prev_x, prev_y = knots_positions[i - 1]
+                knot_x, knot_y = knots_positions[i]
+                if knot_x - 1 <= prev_x <= knot_x + 1 and knot_y + 1 <= prev_y <= knot_y + 1:
+                    pass # Don't need to move knot
+                elif prev_y == knot_y:
+                    if prev_x == knot_x + 2:
+                        knot_x += 1 # Move knot to the right
+                    elif prev_x == knot_x - 2:
+                        knot_x -= 1 # Move knot to the left
+                elif prev_x == knot_x:
+                    if prev_y == knot_y + 2:
+                        knot_y += 1 # Move knot up
+                    elif prev_y == knot_y - 2:
+                        knot_y -= 1 # Move knot down
+                elif prev_x == knot_x + 1:
+                    if prev_y == knot_y + 2:
+                        knot_x += 1 # Move knot up-right
+                        knot_y += 1
+                    elif prev_y == knot_y - 2:
+                        knot_x += 1 # Move knot down-right
+                        knot_y -= 1
+                elif prev_x == knot_x + 2:
+                    if prev_y == knot_y + 1:
+                        knot_x += 1 # Move knot up-right
+                        knot_y += 1
+                    elif prev_y == knot_y - 1:
+                        knot_x += 1 # Move knot down-right
+                        knot_y -= 1
+                elif prev_x == knot_x - 1:
+                    if prev_y == knot_y + 2:
+                        knot_x -= 1 # Move knot up-left
+                        knot_y += 1
+                    elif prev_y == knot_y - 2:
+                        knot_x -= 1 # Move knot down-left
+                        knot_y -= 1
+                elif prev_x == knot_x - 2:
+                    if prev_y == knot_y + 1:
+                        knot_x -= 1 # Move knot up-left
+                        knot_y += 1
+                    elif prev_y == knot_y - 1:
+                        knot_x -= 1 # Move knot down-left
+                        knot_y -= 1
+                knots_positions[i] = (knot_x, knot_y)
 
-            # Remember the position tail has visited
-            tail_positions.add(tail_position)
+                # Remember the positions tail has visited
+                if i == NUM_KNOTS - 1:
+                    tail_positions.add(knots_positions[i])
 
     print(f'Tail visited positions: {len(tail_positions)}')
